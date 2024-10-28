@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>MTP ATC</title>
+</head>
+<body>
+
+    <header>
+        <h1>MTP ATC</h1>
+    </header>
+    
+    <div class="container">
+        <nav class="sidebar">
+            <button onclick="mostrarModulo('alta-participantes')">Alta de Participante</button>
+            <button onclick="mostrarModulo('armado-grupos')">Armado de Grupos</button>
+            <button onclick="mostrarModulo('carga-resultados')">Carga de Resultados</button>
+            <button onclick="mostrarModulo('clasificacion')">Clasificación</button>
+        </nav>
+
+        <main class="content">
+            <!-- Sección 1: Alta de Participante -->
+            <div id="alta-participantes" class="module">
+                <h2>Alta de Participante</h2>
+                <input id="nombre-participante" type="text" placeholder="Nombre completo" required>
+                <input id="fecha-nacimiento" type="date" placeholder="Fecha de nacimiento">
+                <input id="genero" type="text" placeholder="Género">
+                <input id="categoria" type="text" placeholder="Categoría">
+                <input id="lado" type="text" placeholder="Lado (D/I)">
+                <input id="mano-habil" type="text" placeholder="Mano hábil (D/Z)">
+                <button onclick="addParticipante()">Agregar Participante</button>
+                <ul id="lista-participantes"></ul>
+            </div>
+
+            <!-- Sección 2: Armado de Grupos -->
+            <div id="armado-grupos" class="module" style="display: none;">
+                <h2>Armado de Grupos</h2>
+                <input id="num-grupos" type="number" placeholder="Número de grupos" min="1">
+                <button onclick="armarGrupos()">Armar Grupos</button>
+                <ul id="lista-grupos"></ul>
+            </div>
+
+            <!-- Sección 3: Carga de Resultados -->
+            <div id="carga-resultados" class="module" style="display: none;">
+                <h2>Carga de Resultados</h2>
+                <div id="formulario-resultados"></div>
+                <button onclick="cargarResultados()">Cargar Resultados</button>
+                <ul id="lista-resultados"></ul>
+            </div>
+
+            <!-- Sección 4: Clasificación -->
+            <div id="clasificacion" class="module" style="display: none;">
+                <h2>Clasificación</h2>
+                <button onclick="calcularClasificacion()">Calcular Clasificación</button>
+                <ul id="lista-clasificacion"></ul>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
