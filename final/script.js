@@ -1,14 +1,17 @@
-let participantes = [];
+let participantes = []; 
 let grupos = [];
 let resultados = [];
+let setActual = 1; // Inicializa el set actual
 
+// Muestra el módulo correspondiente
 function mostrarModulo(modulo) {
     const modulos = document.querySelectorAll('.module');
     modulos.forEach(m => m.style.display = 'none');
     document.getElementById(modulo).style.display = 'block';
 }
 
-function addParticipante() {
+// Agrega un nuevo participante
+async function addParticipante() {
     const nombre = document.getElementById("nombre-participante").value;
     const fechaNacimiento = document.getElementById("fecha-nacimiento").value;
     const genero = document.getElementById("genero").value;
@@ -17,7 +20,7 @@ function addParticipante() {
     const manoHabil = document.getElementById("mano-habil").value;
 
     if (nombre) {
-        participantes.push({
+        const nuevoParticipante = {
             nombre,
             fechaNacimiento,
             genero,
@@ -25,14 +28,35 @@ function addParticipante() {
             lado,
             manoHabil,
             puntos: 0 // Inicializar puntos
-        });
-        document.getElementById("nombre-participante").value = '';
-        mostrarParticipantes();
+        };
+
+        try {
+            // Guardar el participante en la base de datos
+            const response = await fetch('http://localhost:5000/api/participantes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(nuevoParticipante),
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al agregar participante: ' + response.statusText);
+            }
+
+            // Agregar a la lista de participantes localmente
+            participantes.push(nuevoParticipante);
+            document.getElementById("nombre-participante").value = '';
+            mostrarParticipantes();
+        } catch (error) {
+            alert(error.message);
+        }
     } else {
         alert("El nombre completo es obligatorio.");
     }
 }
 
+// Muestra la lista de participantes
 function mostrarParticipantes() {
     const listaParticipantes = document.getElementById("lista-participantes");
     listaParticipantes.innerHTML = '';
@@ -43,6 +67,7 @@ function mostrarParticipantes() {
     });
 }
 
+// Arma los grupos de participantes
 function armarGrupos() {
     const numGrupos = parseInt(document.getElementById("num-grupos").value);
     if (numGrupos < 1 || participantes.length < numGrupos) {
@@ -64,6 +89,7 @@ function armarGrupos() {
     mostrarGrupos();
 }
 
+// Muestra los grupos creados
 function mostrarGrupos() {
     const listaGrupos = document.getElementById("lista-grupos");
     listaGrupos.innerHTML = '';
@@ -89,61 +115,112 @@ function mostrarGrupos() {
     }
 }
 
-function cargarResultados() {
+// Carga los resultados ingresados y los guarda en la base de datos
+async function cargarResultados() {
     resultados = [];
-    // Resetear puntos de los grupos antes de la carga
-    grupos.forEach(grupo => {
-        grupo.forEach(participante => { participante.puntos = 0; }); // Resetear puntos de los participantes
-    });
 
+    // No reiniciar los puntos de los grupos
     for (let i = 0; i < grupos.length; i++) {
         for (let j = i + 1; j < grupos.length; j++) {
             const resultadoInput = document.getElementById(`resultado-${i}-${j}`);
-            const resultado = resultadoInput.value;
+            const resultado = resultadoInput ? resultadoInput.value : '';
 
             if (resultado) {
                 const [score1, score2] = resultado.split('-').map(Number);
-                const puntosGrupo1 = score1 > score2 ? 3 : score1 < score2 ? 0 : 1; // Puntos para el grupo 1
-                const puntosGrupo2 = score1 < score2 ? 3 : score1 > score2 ? 0 : 1; // Puntos para el grupo 2
+                
+                // Aquí se asignan puntos basados en los resultados
+                const puntosGrupo1 = score1; // puntos según el score
+                const puntosGrupo2 = score2; // puntos según el score
 
-                resultados.push({ partido: `Grupo ${i + 1} vs Grupo ${j + 1}`, resultado, puntos: [puntosGrupo1, puntosGrupo2] });
+                resultados.push({
+                    partido: `Grupo ${i + 1} vs Grupo ${j + 1}`,
+                    resultado,
+                    puntos: [puntosGrupo1, puntosGrupo2],
+                    formato: "paddleball" // Establecer el formato
+                });
 
-                // Asignar puntos a los grupos
+                // Acumular puntos de los grupos
                 grupos[i].forEach(participante => { participante.puntos += puntosGrupo1; });
                 grupos[j].forEach(participante => { participante.puntos += puntosGrupo2; });
             }
         }
     }
 
-    mostrarResultados();
+    // Guardar resultados en la base de datos
+    await fetch('http://localhost:5000/api/resultados', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            ronda: setActual, // Usar el número del set actual
+            partidos: resultados,
+        }),
+    });
+
+    // Incrementar el set actual
+    setActual++;
+
+    // Mostrar resultados guardados
+    await cargarResultadosDesdeBackend();
+
+    // Reorganizar grupos para el siguiente set
+    armarGrupos(); // Vuelve a armar grupos aleatoriamente
+
+    // Mostrar los puntos acumulados
+    mostrarPuntosGrupos();
 }
 
-function mostrarResultados() {
-    const listaResultados = document.getElementById("lista-resultados");
-    listaResultados.innerHTML = '';
-    resultados.forEach(r => {
-        const li = document.createElement('li');
-        li.textContent = `${r.partido} - Resultado: ${r.resultado}`;
-        listaResultados.appendChild(li);
+// Función para mostrar los puntos acumulados de cada grupo
+function mostrarPuntosGrupos() {
+    const puntosGruposDiv = document.getElementById("puntos-grupos");
+    puntosGruposDiv.innerHTML = ''; // Limpiar contenido anterior
+
+    grupos.forEach((grupo, index) => {
+        const puntosDiv = document.createElement('div');
+        puntosDiv.textContent = `Grupo ${index + 1}: ${grupo.reduce((sum, participante) => sum + participante.puntos, 0)} puntos`;
+        puntosGruposDiv.appendChild(puntosDiv);
     });
 }
 
-function calcularClasificacion() {
-    const clasificacion = grupos.map((grupo, index) => ({
-        grupo: index + 1,
-        puntaje: grupo.reduce((acc, p) => acc + p.puntos, 0) // Sumar puntos del grupo
-    }));
-
-    clasificacion.sort((a, b) => b.puntaje - a.puntaje); // Ordenar por puntaje total
-    mostrarClasificacion(clasificacion);
+// Cargar participantes desde el backend
+async function cargarParticipantesDesdeBackend() {
+    const response = await fetch('http://localhost:5000/api/participantes');
+    if (response.ok) {
+        const datos = await response.json();
+        participantes = datos; // Guardar participantes en la lista local
+        mostrarParticipantes(); // Mostrar participantes en la interfaz
+    } else {
+        console.error('Error al cargar participantes:', response.statusText);
+    }
 }
 
-function mostrarClasificacion(clasificacion) {
-    const listaClasificacion = document.getElementById("lista-clasificacion");
-    listaClasificacion.innerHTML = '';
-    clasificacion.forEach(grupo => {
-        const li = document.createElement('li');
-        li.textContent = `Grupo ${grupo.grupo} - Puntaje Total: ${grupo.puntaje}`;
-        listaClasificacion.appendChild(li);
-    });
+// Cargar resultados desde el backend
+async function cargarResultadosDesdeBackend() {
+    const response = await fetch('http://localhost:5000/api/resultados');
+    if (response.ok) {
+        const datos = await response.json();
+        const listaResultados = document.getElementById("lista-resultados-guardados");
+        listaResultados.innerHTML = ''; // Limpiar lista antes de agregar
+
+        datos.forEach(ronda => {
+            const liRonda = document.createElement('li');
+            liRonda.textContent = `Ronda ${ronda.ronda}:`;
+            listaResultados.appendChild(liRonda);
+
+            ronda.partidos.forEach(partido => {
+                const liPartido = document.createElement('li');
+                liPartido.textContent = `${partido.partido} - Resultado: ${partido.resultado} (Formato: ${partido.formato})`;
+                listaResultados.appendChild(liPartido);
+            });
+        });
+    } else {
+        console.error('Error al cargar resultados:', response.statusText);
+    }
 }
+
+// Llama a estas funciones al cargar la página
+document.addEventListener("DOMContentLoaded", async () => {
+    await cargarParticipantesDesdeBackend();
+    await cargarResultadosDesdeBackend();
+});
