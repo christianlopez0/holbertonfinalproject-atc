@@ -1,0 +1,182 @@
+body { 
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+header {
+    background-color: #222;
+    color: white;
+    padding: 20px;
+    text-align: left;
+}
+
+h1 {
+    margin: 0;
+}
+
+/* Contenedor principal */
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Botones de navegación */
+.modules {
+    display: flex;
+    justify-content: space-around; /* Centra los botones */
+    background-color: #333;
+    padding: 10px;
+}
+
+button {
+    background-color: #089814;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #97f16d;
+}
+
+/* Módulos de contenido */
+.module {
+    background: #444;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    margin: 10px 0;
+    color: white;
+}
+
+/* Flexbox para organizar formulario y lista/puntos */
+.form-and-list {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Contenedor del formulario (izquierda) */
+.form-container {
+    flex: 0 1 60%; /* Ocupa un 60% del espacio */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Contenedor de la lista de participantes o puntos (derecha) */
+.list-container {
+    flex: 0 1 35%; /* Ocupa un 35% del espacio */
+    background-color: #333;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.list-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.list-container li {
+    margin: 10px 0;
+    padding: 10px;
+    background: #444;
+    border-radius: 4px;
+    color: white;
+}
+
+/* La sección de resultados ocupa todo el espacio restante */
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #2b2b2b;
+    color: white;
+}
+
+/* Estilos para los formularios e interacción */
+input {
+    width: calc(100% - 22px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #555;
+    border-radius: 4px;
+    background: #fff;
+    color: #333;
+}
+
+/* Estilo para los resultados guardados */
+#module-resultados {
+    display: block;
+    padding: 20px;
+    background-color: #333;  /* Fondo más oscuro para el área de resultados */
+    border-radius: 8px;       /* Bordes redondeados */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);  /* Sombra suave para resaltar */
+    height: 100%;  /* Asegura que el módulo ocupe todo el espacio disponible */
+    overflow-y: auto;  /* Permite desplazarse si los resultados son demasiados */
+}
+
+#module-resultados h2 {
+    font-size: 24px;
+    margin-bottom: 20px; /* Espacio debajo del título */
+    text-align: center;
+    color: #fff;
+}
+
+#lista-resultados-guardados {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: none;  /* Quitamos el límite de altura */
+    overflow-y: auto;  /* Hacer que la lista sea desplazable si es demasiado larga */
+}
+
+#lista-resultados-guardados li {
+    background-color: #444;  /* Fondo de los elementos */
+    color: white;             /* Color de texto blanco */
+    margin: 12px 0;           /* Margen para separar los elementos */
+    padding: 15px;            /* Relleno interno para los elementos */
+    border-radius: 8px;       /* Bordes redondeados para los elementos */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Sombra suave */
+    font-size: 16px;          /* Tamaño de fuente más grande */
+    line-height: 1.5;         /* Espaciado entre líneas */
+}
+
+#lista-resultados-guardados li:hover {
+    background-color: #555;  /* Cambio de fondo al pasar el ratón */
+    cursor: pointer;
+}
+
+#lista-resultados-guardados li span {
+    font-weight: bold;
+    color: #FFD700;  /* Color dorado para resaltar información importante */
+}
+
+/* Opcional: Estilo de los puntos o resultados específicos dentro de cada ítem */
+#lista-resultados-guardados li .resultado {
+    color: #97f16d;  /* Color verde suave para los resultados */
+}
+
+/* Estilo para los puntos acumulados de los grupos */
+#puntos-grupos {
+    margin-top: 20px;
+    padding: 10px;
+    background: #555;
+    border-radius: 4px;
+}
+
+#puntos-grupos div {
+    margin: 5px 0;
+    padding: 8px;
+    background: #666;
+    border-radius: 4px;
+    color: white;
+}
